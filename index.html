@@ -4,100 +4,130 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Конструктор и проведение видео-скрининга</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <section id="welcome" class="section active">
-            <h1>Конструктор и проведение видео-скрининга</h1>
-            <p>Добро пожаловать в конструктор видео-скрининга!</p>
-            <p>Создавайте вопросы и указывайте ключевые слова для правильных ответов. Затем запустите тест, разрешите доступ к камере и микрофону, и система автоматически сравнит ваши голосовые ответы с ожидаемыми. Для стабильной работы рекомендуется использовать браузер Chrome на компьютере.</p>
-            <button id="start-button" class="primary-button">Понятно, перейти к созданию теста</button>
-        </section>
 
-        <section id="constructor" class="section">
-            <h2>Конструктор теста</h2>
-            <div class="constructor-step">
+    <div id="instructionsScreen" class="screen active">
+        <div class="info-screen-content">
+            <h1>Добро пожаловать в конструктор видео-скрининга!</h1>
+            <p style="font-size: 1.2em; line-height: 1.6;">
+                Создавайте вопросы и указывайте ключевые слова для правильных ответов. 
+                Затем запустите тест, разрешите доступ к камере и микрофону, и система 
+                автоматически сравнит ваши голосовые ответы с ожидаемыми. Для стабильной 
+                работы рекомендуется использовать браузер Chrome на компьютере.
+            </p>
+            <br>
+            <button id="agreeAndSetupBtn">Понятно, перейти к созданию теста</button>
+        </div>
+    </div>
+
+    <div id="constructorScreen" class="screen">
+        <h1>Конструктор теста</h1>
+        <div class="constructor-layout">
+            <div class="constructor-form">
                 <h3>1. Добавьте вопрос</h3>
-                <div class="input-group">
-                    <label>Текст вопроса</label>
-                    <textarea id="question-text"></textarea>
+                <div class="form-group">
+                    <label for="questionInput">Текст вопроса</label>
+                    <input type="text" id="questionInput" placeholder="Например: Какой у вас опыт работы с JavaScript?">
                 </div>
-                <div class="input-group">
-                    <label>Ожидаемый ключевой ответ</label>
-                    <textarea id="expected-answer"></textarea>
+                <div class="form-group">
+                    <label for="correctAnswerInput">Ожидаемый ключевой ответ</label>
+                    <input type="text" id="correctAnswerInput" placeholder="Например: 5 лет, React, да">
                 </div>
-                <button id="add-question" class="secondary-button">Добавить вопрос</button>
-            </div>
+                <button id="addQuestionBtn">Добавить вопрос</button>
 
-            <div class="constructor-step">
-                <h3>2. Настройте критерии</h3>
-                <div class="input-group">
-                    <label>Сколько правильных ответов нужно для прохождения</label>
-                    <input type="number" id="passing-score" min="1" value="1">
+                <h3 style="margin-top: 30px;">2. Настройте критерии</h3>
+                <div class="form-group">
+                    <label for="thresholdInput">Сколько правильных ответов нужно для прохождения</label>
+                    <input type="number" id="thresholdInput" value="1" min="1">
                 </div>
-                <div class="input-group">
+                <div class="form-group">
                     <label>Когда сохранять запись</label>
                     <div class="radio-group">
-                        <input type="radio" id="save-successful" name="save-option" value="successful" checked>
-                        <label for="save-successful">Только успешные</label>
-                    </div>
-                    <div class="radio-group">
-                        <input type="radio" id="save-always" name="save-option" value="always">
-                        <label for="save-always">Всегда</label>
+                        <label><input type="radio" name="saveCondition" value="successful" checked> Только успешные</label>
+                        <label><input type="radio" name="saveCondition" value="all"> Всегда</label>
                     </div>
                 </div>
-                <button id="create-test" class="primary-button">Создать тест</button>
+                <button id="finalizeSetupBtn">Создать тест</button>
             </div>
-
-            <div id="questions-list">
+            <div class="constructor-preview">
                 <h3>Список вопросов</h3>
-                <ul id="questions-container"></ul>
+                <div class="results-container">
+                    <ul id="questionListConstructor"></ul>
+                </div>
             </div>
-        </section>
-
-        <section id="test-intro" class="section">
+        </div>
+    </div>
+    
+    <div id="startInterviewScreen" class="screen">
+        <div class="info-screen-content">
             <h2>Инструкция для прохождения</h2>
-            <p>Вам будет предложено несколько вопросов. После прочтения вопроса нажмите кнопку "Начать ответ", произнесите его, а затем нажмите "Закончить ответ" для оценки.</p>
-            <p>Нажимая кнопки ниже, вы даете согласие на запись вашего видео и аудио для оценки.</p>
-            <button id="check-devices" class="secondary-button">Проверить камеру и микрофон</button>
-            <button id="start-test" class="primary-button">Начать тест</button>
-        </section>
-
-        <section id="test-question" class="section">
-            <h2>Текущий вопрос</h2>
-            <div id="current-question"></div>
-            <div id="answer-controls">
-                <button id="start-answer" class="primary-button">Начать ответ</button>
-                <button id="stop-answer" class="primary-button" style="display: none;">Закончить ответ</button>
+            <p>
+                Вам будет предложено несколько вопросов. После прочтения вопроса 
+                нажмите кнопку "Начать ответ", произнесите его, а затем нажмите 
+                "Закончить ответ" для оценки.
+            </p>
+            <p style="font-weight: bold;">
+                Нажимая кнопки ниже, вы даете согласие на запись вашего видео и аудио для оценки.
+            </p>
+            <br>
+            <div class="controls" style="flex-direction: column; align-items: center; gap: 20px;">
+                <button id="checkDeviceBtn">Проверить камеру и микрофон</button>
+                <p id="deviceCheckStatus"></p>
+                <button id="startBtn" style="display: none;">Начать тест</button>
             </div>
-            <video id="video-preview" autoplay muted></video>
-        </section>
+        </div>
+    </div>
 
-        <section id="results" class="section">
-            <h2>Результаты</h2>
-            <div id="test-results"></div>
-            <div class="recognized-answer">
-                <h3>Распознанный ответ:</h3>
-                <p id="recognized-text"></p>
+    <div id="interviewScreen" class="screen">
+        <div class="main-layout">
+             <div class="center-column">
+                <div class="video-container">
+                    <video id="videoPreview" muted autoplay playsinline></video>
+                </div>
+                <div class="card" style="width: 100%; flex-grow: 0;">
+                    <h3>Текущий вопрос</h3>
+                    <p id="question"></p>
+                </div>
+                <div class="controls" style="flex-direction: row; margin-top: 20px;">
+                    <button id="recordBtn" disabled>Начать ответ</button>
+                </div>
+                 <p id="status"></p>
             </div>
-            <button id="save-recording" class="secondary-button">Сохранить запись</button>
-            <button id="new-test" class="primary-button">Создать новый тест</button>
-        </section>
+            <div class="right-column">
+                <h3>Результаты</h3>
+                <div class="results-container"><ul id="resultsList"></ul></div>
+                <h3 style="margin-top: 20px;">Распознанный ответ:</h3>
+                <div class="card" style="min-height: 100px;">
+                    <p id="recognitionResult"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <section id="history" class="section">
-            <h2>История прохождений</h2>
-            <table id="history-table">
-                <thead>
-                    <tr>
-                        <th>Дата и время</th>
-                        <th>Результат</th>
-                        <th>Счет</th>
-                    </tr>
-                </thead>
-                <tbody id="history-data"></tbody>
-            </table>
-        </section>
+    <div id="resultsScreen" class="screen">
+        <div class="info-screen-content">
+            <h2 id="resultTitle"></h2>
+            <p id="resultText" style="font-size: 1.2em; margin-bottom: 30px;"></p>
+            <div class="controls" style="flex-direction: row; justify-content: center;">
+                <button id="saveBtn" style="display: none;">Сохранить запись</button>
+                <button id="restartBtn">Создать новый тест</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="historySection" style="display: none;">
+        <h2>История прохождений</h2>
+        <table class="history-table">
+            <thead>
+                <tr><th>Дата и время</th><th>Результат</th><th>Счет</th></tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+        </table>
     </div>
 
     <script src="script.js"></script>
